@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}My Attendance{% endblock %}
+{% block content %}
+<section>
+    <h2>My Attendance</h2>
+
+    <div class="cards">
+        <div class="card stat-card {% if overall_pct is not none and overall_pct < 75 %}danger{% else %}success{% endif %}">
+            <span class="stat-number">{{ overall_pct if overall_pct is not none else '—' }}{% if overall_pct is not none %}%{% endif %}</span>
+            <span class="stat-label">Overall Attendance</span>
+        </div>
+        <a href="{{ url_for('attendance_page') }}" class="card action-card">
+            <h3>Mark Attendance</h3>
+            <p>See today's lectures and mark yourself present.</p>
+        </a>
+    </div>
+
+    <h3>Subject-wise Attendance</h3>
+    <table class="data-table">
+        <thead><tr><th>Subject</th><th>Attended</th><th>Total Lectures Held</th><th>Percentage</th></tr></thead>
+        <tbody>
+            {% for s in stats %}
+            <tr>
+                <td>{{ s.subject_name }}</td>
+                <td>{{ s.attended }}</td>
+                <td>{{ s.total }}</td>
+                <td>
+                    {% if s.percentage is not none %}
+                        <span class="badge {% if s.percentage < 75 %}badge-absent{% else %}badge-present{% endif %}">{{ s.percentage }}%</span>
+                    {% else %}
+                        <span class="subtext">No lectures yet</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="empty-row">No subjects found for your class yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p class="hint" style="margin-top:16px;">Attendance % below 75% is highlighted — check your college's minimum attendance policy.</p>
+</section>
+{% endblock %}

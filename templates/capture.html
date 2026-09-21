@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Capture Face{% endblock %}
+{% block content %}
+<section class="capture-section">
+    <h2>Capture Face Samples</h2>
+    <p class="subtext">For <strong>{{ target_user.name }}</strong></p>
+    <p class="hint">Slowly turn your head slightly left, right, up and down while capturing.</p>
+
+    <div class="webcam-wrap">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+    </div>
+
+    <div class="progress-wrap">
+        <div class="progress-bar"><div id="progressFill" class="progress-fill" style="width:0%"></div></div>
+        <span id="progressText">0 / {{ min_samples }} samples captured</span>
+    </div>
+
+    <p id="statusMsg" class="status-msg"></p>
+
+    <div class="btn-row">
+        <button id="startBtn" class="btn-primary">Start Capturing</button>
+        <button id="finishBtn" class="btn-success" style="display:none;">Finish & Train Model</button>
+    </div>
+</section>
+
+<script>
+const LABEL = {{ target_user.id }};
+const MIN_SAMPLES = {{ min_samples }};
+</script>
+<script src="{{ url_for('static', filename='js/capture.js') }}"></script>
+{% endblock %}

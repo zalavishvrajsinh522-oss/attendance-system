@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<section class="form-section">
+    <h2>Create Your Account</h2>
+
+    <form method="POST" class="styled-form">
+        <label>I am a...
+            <select name="role" id="roleSelect">
+                <option value="student">Student</option>
+                <option value="admin">Admin (Faculty / HOD / Principal)</option>
+            </select>
+        </label>
+
+        <label id="adminTypeLabel" style="display:none;">Admin Type
+            <select name="admin_type" id="adminTypeSelect">
+                <option value="faculty">Faculty</option>
+                <option value="hod">HOD</option>
+                <option value="principal">Principal</option>
+            </select>
+        </label>
+
+        <label>Full Name <input type="text" name="name" required></label>
+        <label>Email <input type="email" name="email" required></label>
+        <label>Password <input type="password" name="password" required minlength="6"></label>
+
+        <label id="idLabel">Roll Number
+            <input type="text" name="id_number" id="idInput" required placeholder="e.g. 21CE045">
+        </label>
+
+        <label id="classLabel">Class
+            <input type="text" name="class_name" id="classInput" required placeholder="e.g. TY-CE-A">
+        </label>
+
+        <button type="submit" class="btn-primary">Create Account &rarr;</button>
+    </form>
+
+    <p class="subtext" style="margin-top:16px;">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+</section>
+
+<script>
+const roleSelect = document.getElementById("roleSelect");
+const adminTypeLabel = document.getElementById("adminTypeLabel");
+const idLabel = document.getElementById("idLabel");
+const idInput = document.getElementById("idInput");
+const classLabel = document.getElementById("classLabel");
+const classInput = document.getElementById("classInput");
+
+function updateForm() {
+    if (roleSelect.value === "admin") {
+        adminTypeLabel.style.display = "flex";
+        idLabel.firstChild.textContent = "Faculty / Staff Code";
+        idInput.placeholder = "e.g. FAC001";
+        classLabel.firstChild.textContent = "Department (optional)";
+        classInput.placeholder = "e.g. Computer Engineering";
+        classInput.required = false;
+    } else {
+        adminTypeLabel.style.display = "none";
+        idLabel.firstChild.textContent = "Roll Number";
+        idInput.placeholder = "e.g. 21CE045";
+        classLabel.firstChild.textContent = "Class";
+        classInput.placeholder = "e.g. TY-CE-A";
+        classInput.required = true;
+    }
+}
+
+roleSelect.addEventListener("change", updateForm);
+updateForm();
+</script>
+{% endblock %}

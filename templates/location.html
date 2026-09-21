@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Location Settings{% endblock %}
+{% block content %}
+<section class="form-section">
+    <h2>Campus Location & Allowed Radius</h2>
+    <p class="subtext">Students can only mark attendance within this radius.</p>
+
+    <button type="button" id="useMyLocationBtn" class="btn-secondary" style="margin-bottom:16px;">
+        Use My Current Location
+    </button>
+
+    <form method="POST" class="styled-form">
+        <label>Latitude
+            <input type="number" step="any" name="lat" id="latInput" required
+                   value="{{ settings.office_lat if settings and settings.office_lat else '' }}">
+        </label>
+        <label>Longitude
+            <input type="number" step="any" name="lng" id="lngInput" required
+                   value="{{ settings.office_lng if settings and settings.office_lng else '' }}">
+        </label>
+        <label>Allowed Radius (meters)
+            <input type="number" name="radius" required value="{{ settings.radius_m if settings else 100 }}">
+        </label>
+        <button type="submit" class="btn-primary">Save</button>
+    </form>
+    <p id="locMsg" class="status-msg"></p>
+</section>
+
+<script>
+document.getElementById("useMyLocationBtn").addEventListener("click", () => {
+    const msg = document.getElementById("locMsg");
+    if (!navigator.geolocation) {
+        msg.textContent = "Geolocation not supported.";
+        msg.className = "status-msg error";
+        return;
+    }
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            document.getElementById("latInput").value = pos.coords.latitude;
+            document.getElementById("lngInput").value = pos.coords.longitude;
+            msg.textContent = "Location captured. Review and click Save.";
+            msg.className = "status-msg ok";
+        },
+        (err) => {
+            msg.textContent = "Could not get location: " + err.message;
+            msg.className = "status-msg error";
+        }
+    );
+});
+</script>
+{% endblock %}

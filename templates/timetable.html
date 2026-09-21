@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Timetable{% endblock %}
+{% block content %}
+<section>
+    <h2>Weekly Timetable</h2>
+
+    <form method="GET" class="filter-bar">
+        <label>Class
+            <select name="class_name" onchange="this.form.submit()">
+                {% for c in class_names %}
+                <option value="{{ c }}" {% if c == selected_class %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </form>
+
+    {% if selected_class %}
+    <div class="form-section" style="max-width:none; margin-bottom:24px;">
+        <h3>Add Lecture — {{ selected_class }}</h3>
+        <form method="POST" class="styled-form">
+            <input type="hidden" name="class_name" value="{{ selected_class }}">
+            <label>Subject
+                <select name="subject_id" required>
+                    {% for s in subjects %}
+                    <option value="{{ s.id }}">{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Day
+                <select name="day_of_week" required>
+                    {% for d in days %}<option value="{{ d }}">{{ d }}</option>{% endfor %}
+                </select>
+            </label>
+            <label>Start Time <input type="time" name="start_time" required></label>
+            <label>End Time <input type="time" name="end_time" required></label>
+            <label>Faculty
+                <select name="faculty_id">
+                    <option value="">Not assigned</option>
+                    {% for f in faculty %}
+                    <option value="{{ f.id }}">{{ f.name }} ({{ f.admin_type }})</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button type="submit" class="btn-primary">Add to Timetable</button>
+        </form>
+    </div>
+
+    <table class="data-table">
+        <thead><tr><th>Day</th><th>Time</th><th>Subject</th><th>Faculty</th></tr></thead>
+        <tbody>
+            {% for t in timetable %}
+            <tr>
+                <td>{{ t.day_of_week }}</td>
+                <td>{{ t.start_time }} - {{ t.end_time }}</td>
+                <td>{{ t.subject_name }}</td>
+                <td>{{ t.faculty_name or '-' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="empty-row">No lectures scheduled yet for {{ selected_class }}.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="subtext">No classes exist yet — students need to sign up first, or add a subject for a class name to get started.</p>
+    {% endif %}
+</section>
+{% endblock %}

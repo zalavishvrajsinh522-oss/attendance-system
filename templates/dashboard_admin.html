@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<section>
+    <h2>Admin Dashboard</h2>
+
+    <div class="cards">
+        <div class="card stat-card"><span class="stat-number">{{ summary.total_students }}</span><span class="stat-label">Total Students</span></div>
+        <div class="card stat-card"><span class="stat-number">{{ summary.lectures_today }}</span><span class="stat-label">Lectures Scheduled Today</span></div>
+        <div class="card stat-card success"><span class="stat-number">{{ summary.marks_today }}</span><span class="stat-label">Attendance Marks Today</span></div>
+    </div>
+
+    <form method="GET" class="filter-bar">
+        <label>Class
+            <select name="class_name" onchange="this.form.submit()">
+                {% for c in class_names %}
+                <option value="{{ c }}" {% if c == selected_class %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </form>
+
+    {% for subj in class_stats %}
+    <h3>{{ subj.subject_name }} <span class="subtext">({{ subj.total_sessions }} lectures held)</span></h3>
+    <table class="data-table" style="margin-bottom:24px;">
+        <thead><tr><th>Student</th><th>Roll No</th><th>Attended</th><th>Percentage</th></tr></thead>
+        <tbody>
+            {% for st in subj.students %}
+            <tr>
+                <td>{{ st.name }}</td>
+                <td>{{ st.id_number }}</td>
+                <td>{{ st.attended }}</td>
+                <td>
+                    {% if st.percentage is not none %}
+                        <span class="badge {% if st.percentage < 75 %}badge-absent{% else %}badge-present{% endif %}">{{ st.percentage }}%</span>
+                    {% else %}
+                        <span class="subtext">-</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="empty-row">No students in this class yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="subtext">No subjects set up for this class yet — add some under Subjects.</p>
+    {% endfor %}
+</section>
+{% endblock %}

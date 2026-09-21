@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Mark Attendance{% endblock %}
+{% block content %}
+<section class="capture-section">
+    <h2>Mark Attendance — Today's Lectures</h2>
+
+    {% if not lectures %}
+        <p class="subtext">No lectures scheduled for your class today.</p>
+    {% else %}
+        <div class="webcam-wrap">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas" style="display:none;"></canvas>
+        </div>
+        <p id="locStatus" class="status-msg"></p>
+        <p id="statusMsg" class="status-msg"></p>
+
+        <table class="data-table">
+            <thead><tr><th>Time</th><th>Subject</th><th>Faculty</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for lec in lectures %}
+                <tr>
+                    <td>{{ lec.start_time }} - {{ lec.end_time }}</td>
+                    <td>{{ lec.subject_name }}</td>
+                    <td>{{ lec.faculty_name or '-' }}</td>
+                    <td>
+                        {% if lec.marked %}
+                            <span class="badge badge-present">Marked</span>
+                        {% else %}
+                            <button class="btn-primary mark-btn" data-subject-id="{{ lec.subject_id }}">Mark Present</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</section>
+
+<script>
+const GEOFENCE_ENABLED = {{ 'true' if geofence_enabled else 'false' }};
+</script>
+<script src="{{ url_for('static', filename='js/attendance.js') }}"></script>
+{% endblock %}

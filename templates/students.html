@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block content %}
+<section>
+    <h2>Students</h2>
+
+    <form method="GET" class="filter-bar">
+        <label>Class
+            <select name="class_name" onchange="this.form.submit()">
+                <option value="">All</option>
+                {% for c in class_names %}
+                <option value="{{ c }}" {% if c == selected_class %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </form>
+
+    <table class="data-table">
+        <thead><tr><th>Name</th><th>Email</th><th>Roll No</th><th>Class</th><th>Face</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+            {% for st in students %}
+            <tr>
+                <td>{{ st.name }}</td>
+                <td>{{ st.email }}</td>
+                <td>{{ st.id_number }}</td>
+                <td>{{ st.class_name }}</td>
+                <td>
+                    {% if st.face_registered %}<span class="badge badge-present">Yes</span>
+                    {% else %}<span class="badge badge-absent">No</span> <a href="{{ url_for('capture', user_id=st.id) }}">Capture</a>{% endif %}
+                </td>
+                <td>
+                    {% if st.active %}<span class="badge badge-present">Active</span>
+                    {% else %}<span class="badge badge-absent">Removed</span>{% endif %}
+                </td>
+                <td>
+                    {% if st.active %}
+                    <form method="POST" action="{{ url_for('remove_student', user_id=st.id) }}" onsubmit="return confirm('Remove {{ st.name }}?');">
+                        <button type="submit" class="btn-secondary">Remove</button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('restore_student', user_id=st.id) }}">
+                        <button type="submit" class="btn-success">Restore</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="empty-row">No students found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

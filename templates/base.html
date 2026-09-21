@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}AI Attendance System{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-brand"><span class="dot"></span> AI Attendance System</div>
+    <div class="navbar-links">
+        {% if session.get('user_id') %}
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            {% if session.get('role') == 'student' %}
+                <a href="{{ url_for('attendance_page') }}">Mark Attendance</a>
+            {% endif %}
+            {% if session.get('role') == 'admin' %}
+                <a href="{{ url_for('manage_students') }}">Students</a>
+                <a href="{{ url_for('manage_subjects') }}">Subjects</a>
+                <a href="{{ url_for('manage_timetable') }}">Timetable</a>
+                <a href="{{ url_for('reports') }}">Reports</a>
+                <a href="{{ url_for('location_setup') }}">Location</a>
+            {% endif %}
+            <span class="navbar-user">
+                {{ session.get('name') }}
+                ({{ session.get('role') }}{% if session.get('admin_type') %} - {{ session.get('admin_type') }}{% endif %})
+            </span>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('signup') }}">Sign Up</a>
+        {% endif %}
+    </div>
+</nav>
+
+<main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">AI Attendance Management System &mdash; Final Year Project</footer>
+</body>
+</html>

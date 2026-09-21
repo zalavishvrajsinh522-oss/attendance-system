@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Subjects{% endblock %}
+{% block content %}
+<section>
+    <h2>Subjects</h2>
+    <p class="subtext">Add subjects for each class. Students in that class will see these on their dashboard once lectures are held.</p>
+
+    <div class="form-section" style="max-width:none; margin-bottom:24px;">
+        <form method="POST" class="styled-form">
+            <label>Subject Name <input type="text" name="name" required placeholder="e.g. Database Management Systems"></label>
+            <label>Class
+                <input type="text" name="class_name" required placeholder="e.g. TY-CE-A" list="classList">
+                <datalist id="classList">
+                    {% for c in class_names %}<option value="{{ c }}">{% endfor %}
+                </datalist>
+            </label>
+            <button type="submit" class="btn-primary">Add Subject</button>
+        </form>
+    </div>
+
+    <table class="data-table">
+        <thead><tr><th>Subject</th><th>Class</th></tr></thead>
+        <tbody>
+            {% for s in subjects %}
+            <tr><td>{{ s.name }}</td><td>{{ s.class_name }}</td></tr>
+            {% else %}
+            <tr><td colspan="2" class="empty-row">No subjects yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

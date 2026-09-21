@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Initial Setup{% endblock %}
+{% block content %}
+<section class="form-section">
+    <h2>Welcome — Create the First Admin Account</h2>
+    <p class="subtext">This runs once. This account is set up as Principal, but you (or anyone) can grant HOD/Faculty admin accounts afterward via Sign Up.</p>
+    <form method="POST" class="styled-form">
+        <label>Your Name <input type="text" name="name" required></label>
+        <label>Email <input type="email" name="email" required></label>
+        <label>Password <input type="password" name="password" required minlength="6"></label>
+        <button type="submit" class="btn-primary">Create Admin Account</button>
+    </form>
+</section>
+{% endblock %}
