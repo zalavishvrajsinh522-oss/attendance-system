@@ -15,19 +15,22 @@ Converted from SQLite. Key differences from the SQLite version:
       matching how the rest of the app (templates, app.py) already
       expects to use them (row['column_name'])
 
-SETUP REQUIRED BEFORE RUNNING:
-    1. Start MySQL (e.g. via XAMPP Control Panel -> MySQL -> Start)
-    2. Create the database — either via phpMyAdmin (New -> name it
-       "attendance_system" -> Create), or run this in a MySQL shell:
-           CREATE DATABASE attendance_system;
+SETUP — LOCAL (XAMPP):
+    1. Start MySQL (XAMPP Control Panel -> MySQL -> Start)
+    2. Create the database via phpMyAdmin (New -> "attendance_system" -> Create)
+    Nothing else needed — the defaults below match XAMPP out of the box.
 
-    The DB_CONFIG below is already set to XAMPP's defaults (user "root",
-    no password). If you changed the MySQL root password, or created a
-    dedicated user instead, update DB_CONFIG to match. See
-    MYSQL_SETUP.md for full details and troubleshooting (e.g. port
-    conflicts with another MySQL installation).
+SETUP — HOSTED (Railway, Render, etc.):
+    Hosting platforms provide their own MySQL and give you connection
+    details as environment variables. This file reads those automatically
+    if they're set (MYSQLHOST, MYSQLUSER, MYSQLPASSWORD, MYSQLDATABASE,
+    MYSQLPORT — Railway's standard names), and falls back to the local
+    XAMPP defaults if they're not. You do not need to edit this file to
+    switch between local and hosted — just set the environment variables
+    on the hosting platform's dashboard.
 """
 
+import os
 import math
 from datetime import datetime, date
 
@@ -37,14 +40,27 @@ from mysql.connector import pooling
 DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 # ---------------------------------------------------------------------
-# EDIT THESE to match your MySQL setup
+# Reads hosting-provided environment variables first; falls back to
+# local XAMPP defaults if they're not set (i.e. when running on your
+# own laptop). No manual editing needed for either case.
 # ---------------------------------------------------------------------
 DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "",   # XAMPP's default root user has no password
-    "database": "attendance_system",
+    "host": os.environ.get("MYSQLHOST", "localhost"),
+    "user": os.environ.get("MYSQLUSER", "root"),
+    "password": os.environ.get("MYSQLPASSWORD", ""),
+    "database": os.environ.get("MYSQLDATABASE", "attendance_system"),
+    "port": int(os.environ.get("MYSQLPORT", 3306)),
 }
+
+# Some hosted MySQL providers (e.g. Aiven's free tier) require an
+# encrypted connection with a CA certificate. If SSL_CA_PATH is set
+# (pointing to the ca.pem file downloaded from the provider's
+# dashboard), it's added automatically. Local XAMPP needs no SSL, so
+# this stays inactive unless you set that environment variable.
+_ssl_ca_path = os.environ.get("SSL_CA_PATH")
+if _ssl_ca_path:
+    DB_CONFIG["ssl_ca"] = _ssl_ca_path
+    DB_CONFIG["ssl_verify_cert"] = True
 
 _pool = pooling.MySQLConnectionPool(pool_name="attendance_pool", pool_size=5, **DB_CONFIG)
 
